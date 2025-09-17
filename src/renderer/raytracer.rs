@@ -1,5 +1,8 @@
 use crate::Result;
+use crate::math::Intersection;
+use crate::math::Ray;
 use crate::scene::{Camera, Scene};
+use glam::Vec3;
 use image::{Rgb, RgbImage};
 
 pub struct Raytracer {
@@ -19,13 +22,7 @@ impl Raytracer {
                 let ray = self.camera.generate_ray(x, y, width, height);
 
                 let color = if let Some(hit) = scene.hit(&ray) {
-                    let intensity = 1.0 / (1.0 + hit.distance * hit.distance * 0.01);
-                    let intensity = intensity.clamp(0.1, 1.0);
-
-                    let r = (hit.color.0 as f32 * intensity) as u8;
-                    let g = (hit.color.1 as f32 * intensity) as u8;
-                    let b = (hit.color.2 as f32 * intensity) as u8;
-                    (r, g, b)
+                    self.calculate_lighting(scene, &hit)
                 } else {
                     scene.background_color
                 };
@@ -35,5 +32,59 @@ impl Raytracer {
         }
 
         Ok(img)
+    }
+
+    fn calculate_lighting(&self, scene: &Scene, hit: &Intersection) -> (u8, u8, u8) {
+        let object_color = hit.color;
+
+        let ambient_r = object_color.0 as f32 * scene.ambient_light;
+        let ambient_g = object_color.1 as f32 * scene.ambient_light;
+        let ambient_b = object_color.2 as f32 * scene.ambient_light;
+
+        let mut diffuse_r = 0.0;
+        let mut diffuse_g = 0.0;
+        let mut diffuse_b = 0.0;
+
+        for light in &scene.lights {
+            let light_direction = light.direction_to(hit.point);
+
+            if !self.is_in_shadow(scene, hit.point, hit.normal, light) {
+                let lambert = hit.normal.dot(light_direction).max(0.0);
+
+                let light_intensity = light.intensity_at(hit.point);
+
+                let contribution = lambert * light_intensity;
+
+                diffuse_r += object_color.0 as f32 * contribution * (light.color.0 as f32 / 255.0);
+                diffuse_g += object_color.1 as f32 * contribution * (light.color.1 as f32 / 255.0);
+                diffuse_b += object_color.2 as f32 * contribution * (light.color.2 as f32 / 255.0);
+            }
+        }
+
+        let final_r = (ambient_r + diffuse_r).clamp(0.0, 255.0) as u8;
+        let final_g = (ambient_g + diffuse_g).clamp(0.0, 255.0) as u8;
+        let final_b = (ambient_b + diffuse_b).clamp(0.0, 255.0) as u8;
+
+        (final_r, final_g, final_b)
+    }
+
+    fn is_in_shadow(
+        &self,
+        scene: &Scene,
+        point: Vec3,
+        normal: Vec3,
+        light: &crate::lighting::PointLight,
+    ) -> bool {
+        let light_direction = (light.position - point).normalize();
+
+        let light_distance = (light.position - point).length();
+
+        let shadow_ray = Ray::new(point + normal * 0.001, light_direction);
+
+        if let Some(hit) = scene.hit(&shadow_ray) {
+            hit.distance < light_distance - 0.001
+        } else {
+            false
+        }
     }
 }

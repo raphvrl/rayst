@@ -1,21 +1,29 @@
 use crate::geometry::Primitive;
-use crate::geometry::Sphere;
+use crate::lighting::PointLight;
 
 pub struct Scene {
     pub objects: Vec<Box<dyn Primitive>>,
+    pub lights: Vec<PointLight>,
     pub background_color: (u8, u8, u8),
+    pub ambient_light: f32,
 }
 
 impl Scene {
     pub fn new() -> Self {
         Self {
             objects: Vec::new(),
+            lights: Vec::new(),
             background_color: (0, 0, 0),
+            ambient_light: 0.1,
         }
     }
 
-    pub fn add_sphere(&mut self, sphere: Sphere) {
-        self.objects.push(Box::new(sphere));
+    pub fn add_object(&mut self, object: Box<dyn Primitive>) {
+        self.objects.push(object);
+    }
+
+    pub fn add_light(&mut self, light: PointLight) {
+        self.lights.push(light);
     }
 
     pub fn hit(&self, ray: &crate::math::Ray) -> Option<crate::math::Intersection> {
