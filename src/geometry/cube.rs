@@ -1,4 +1,5 @@
-use crate::geometry::{Plane, Primitive};
+use crate::geometry::Primitive;
+use crate::materials::Material;
 use crate::math::{Intersection, Ray};
 use glam::{Mat3, Vec3};
 
@@ -6,13 +7,13 @@ pub struct Cube {
     pub center: Vec3,
     pub rotation: Vec3,
     pub size: f32,
-    pub color: (u8, u8, u8),
+    pub material: Material,
     rotation_matrix: Mat3,
     inverse_rotation_matrix: Mat3,
 }
 
 impl Cube {
-    pub fn new(center: Vec3, rotation: Vec3, size: f32, color: (u8, u8, u8)) -> Self {
+    pub fn new(center: Vec3, rotation: Vec3, size: f32, material: Material) -> Self {
         let rot_rad = rotation * std::f32::consts::PI / 180.0;
 
         let rot_x = Mat3::from_rotation_x(rot_rad.x);
@@ -26,7 +27,7 @@ impl Cube {
             center,
             rotation,
             size,
-            color,
+            material,
             rotation_matrix,
             inverse_rotation_matrix,
         }
@@ -112,7 +113,7 @@ impl Primitive for Cube {
             world_distance,
             world_point,
             world_normal,
-            self.color,
+            self.material.clone(),
         ))
     }
 }

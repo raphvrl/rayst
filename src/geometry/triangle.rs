@@ -1,4 +1,5 @@
 use crate::geometry::Primitive;
+use crate::materials::Material;
 use crate::math::{Intersection, Ray};
 use glam::Vec3;
 
@@ -7,12 +8,12 @@ pub struct Triangle {
     pub v0: Vec3,
     pub v1: Vec3,
     pub v2: Vec3,
-    pub color: (u8, u8, u8),
+    pub material: Material,
     normal: Vec3,
 }
 
 impl Triangle {
-    pub fn new(v0: Vec3, v1: Vec3, v2: Vec3, color: (u8, u8, u8)) -> Self {
+    pub fn new(v0: Vec3, v1: Vec3, v2: Vec3, material: Material) -> Self {
         let edge1 = v1 - v0;
         let edge2 = v2 - v0;
         let normal = edge1.cross(edge2).normalize();
@@ -21,7 +22,7 @@ impl Triangle {
             v0,
             v1,
             v2,
-            color,
+            material,
             normal,
         }
     }
@@ -59,7 +60,12 @@ impl Primitive for Triangle {
 
         if t > EPSILON {
             let point = ray.origin + t * ray.direction;
-            Some(Intersection::new(t, point, self.normal, self.color))
+            Some(Intersection::new(
+                t,
+                point,
+                self.normal,
+                self.material.clone(),
+            ))
         } else {
             None
         }

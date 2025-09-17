@@ -1,4 +1,5 @@
 use crate::geometry::{Primitive, Triangle};
+use crate::materials::Material;
 use crate::math::{Intersection, Ray};
 use glam::{Mat3, Vec3};
 
@@ -7,7 +8,7 @@ pub struct Pyramid {
     pub base_size: f32,
     pub height: f32,
     pub rotation: Vec3,
-    pub color: (u8, u8, u8),
+    pub material: Material,
     triangles: Vec<Triangle>,
 }
 
@@ -17,7 +18,7 @@ impl Pyramid {
         base_size: f32,
         height: f32,
         rotation: Vec3,
-        color: (u8, u8, u8),
+        material: Material,
     ) -> Self {
         let half = base_size / 2.0;
 
@@ -45,13 +46,13 @@ impl Pyramid {
             rotated_base[0],
             rotated_base[2],
             rotated_base[1],
-            color,
+            material.clone(),
         ));
         triangles.push(Triangle::new(
             rotated_base[0],
             rotated_base[3],
             rotated_base[2],
-            color,
+            material.clone(),
         ));
 
         for i in 0..4 {
@@ -60,7 +61,7 @@ impl Pyramid {
                 rotated_base[i],
                 rotated_base[next_i],
                 rotated_apex,
-                color,
+                material.clone(),
             ));
         }
 
@@ -68,8 +69,8 @@ impl Pyramid {
             base_center,
             base_size,
             height,
-            color,
             rotation,
+            material,
             triangles,
         }
     }
