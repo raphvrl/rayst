@@ -40,7 +40,7 @@ fn run() -> Result<()> {
 
     let raytracer = Raytracer::new(camera);
 
-    let img = raytracer.render(&scene, 800, 600);
+    let img = raytracer.render(&scene, 800, 600, 8);
 
     img.unwrap().save("scene.png")?;
 

@@ -4,6 +4,7 @@ use crate::materials::Material;
 use crate::math::Intersection;
 use crate::math::Ray;
 use crate::scene::{Camera, Scene};
+use fastrand;
 use glam::Vec3;
 use image::{Rgb, RgbImage};
 
@@ -147,15 +148,27 @@ impl Raytracer {
         )
     }
 
-    pub fn render(&self, scene: &Scene, width: u32, height: u32) -> Result<RgbImage> {
+    pub fn render(&self, scene: &Scene, width: u32, height: u32, samples: u32) -> Result<RgbImage> {
         let mut img = RgbImage::new(width, height);
 
         for y in 0..height {
             for x in 0..width {
-                let ray = self.camera.generate_ray(x, y, width, height);
+                let mut color_sum = Vec3::ZERO;
 
-                let color_vec3 = self.trace_ray(scene, &ray, 0);
-                let color = self.vec3_to_rgb(color_vec3);
+                for _ in 0..samples {
+                    let offset_x = fastrand::f32();
+                    let offset_y = fastrand::f32();
+
+                    let ray = self
+                        .camera
+                        .generate_ray(x, y, width, height, offset_x, offset_y);
+
+                    let color = self.trace_ray(scene, &ray, 0);
+                    color_sum += color;
+                }
+
+                let final_color = color_sum / samples as f32;
+                let color = self.vec3_to_rgb(final_color);
 
                 img.put_pixel(x, y, Rgb([color.0, color.1, color.2]));
             }
