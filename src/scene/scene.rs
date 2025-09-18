@@ -1,19 +1,21 @@
+use crate::config::SceneConfig;
 use crate::geometry::Primitive;
 use crate::lighting::PointLight;
+use glam::Vec3;
 
 pub struct Scene {
     pub objects: Vec<Box<dyn Primitive>>,
     pub lights: Vec<PointLight>,
-    pub background_color: (u8, u8, u8),
+    pub background_color: Vec3,
     pub ambient_light: f32,
 }
 
 impl Scene {
-    pub fn new() -> Self {
+    pub fn new(config: &SceneConfig) -> Self {
         Self {
             objects: Vec::new(),
             lights: Vec::new(),
-            background_color: (0, 0, 0),
+            background_color: Vec3::from_array(config.background.color.map(|c| c as f32)),
             ambient_light: 0.1,
         }
     }

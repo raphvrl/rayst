@@ -41,11 +41,7 @@ impl Raytracer {
             }
             direct_lighting
         } else {
-            Vec3::new(
-                scene.background_color.0 as f32 / 255.0,
-                scene.background_color.1 as f32 / 255.0,
-                scene.background_color.2 as f32 / 255.0,
-            )
+            scene.background_color
         }
     }
 
@@ -82,11 +78,7 @@ impl Raytracer {
             if !self.is_in_shadow(scene, hit.point, hit.normal, light) {
                 let light_pos = light.position;
                 let light_dir = (light_pos - hit.point).normalize();
-                let light_color = Vec3::new(
-                    light.color.0 as f32 / 255.0,
-                    light.color.1 as f32 / 255.0,
-                    light.color.2 as f32 / 255.0,
-                );
+                let light_color = light.color;
 
                 let distance = (light_pos - hit.point).length();
                 let attenuation = 1.0 / (distance * distance);

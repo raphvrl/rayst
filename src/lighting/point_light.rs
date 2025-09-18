@@ -3,12 +3,12 @@ use glam::Vec3;
 #[derive(Debug, Clone)]
 pub struct PointLight {
     pub position: Vec3,
-    pub color: (u8, u8, u8),
+    pub color: Vec3,
     pub intensity: f32,
 }
 
 impl PointLight {
-    pub fn new(position: Vec3, color: (u8, u8, u8), intensity: f32) -> Self {
+    pub fn new(position: Vec3, color: Vec3, intensity: f32) -> Self {
         Self {
             position,
             color,

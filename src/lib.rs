@@ -1,3 +1,4 @@
+pub mod config;
 pub mod error;
 pub mod geometry;
 pub mod lighting;
@@ -6,6 +7,7 @@ pub mod math;
 pub mod renderer;
 pub mod scene;
 
+pub use config::*;
 pub use error::{RaystError, Result};
 pub use geometry::{Cube, Plane, Pyramid, Sphere};
 pub use lighting::PointLight;

@@ -1,0 +1,43 @@
+[camera]
+position = [1.0, 1.0, 0.0]
+direction = [0.0, -0.2, -1.0]
+fov = 60.0
+
+[render]
+width = 800
+height = 600
+max_depth = 10
+antialiasing = 4
+output_file = "scene.png"
+
+[background]
+color = [0, 0, 0]
+
+[[objects]]
+object_type = "plane"
+position = [0.0, -1.0, 0.0]
+normal = [0.0, 1.0, 0.0]
+[objects.material]
+material_type = "plastic"
+albedo = [0.8, 0.8, 0.8]
+
+[[objects]]
+object_type = "sphere"
+position = [0.0, 0.0, -5.0]
+radius = 1.0
+[objects.material]
+material_type = "plastic"
+albedo = [0.8, 0.2, 0.2]
+
+[[objects]]
+object_type = "sphere"
+position = [5.0, 0.0, -10.0]
+radius = 1.0
+[objects.material]
+material_type = "gold"
+albedo = [0.8, 0.2, 0.2]
+
+[[lights]]
+position = [10.0, 2.0, 10.0]
+color = [255, 255, 255]
+intensity = 1.0
