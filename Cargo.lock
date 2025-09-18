@@ -795,6 +795,7 @@ dependencies = [
  "fastrand",
  "glam",
  "image",
+ "rayon",
  "serde",
  "toml 0.9.6",
 ]

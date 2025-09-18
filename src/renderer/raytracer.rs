@@ -7,6 +7,7 @@ use crate::scene::{Camera, Scene};
 use fastrand;
 use glam::Vec3;
 use image::{Rgb, RgbImage};
+use rayon::prelude::*;
 
 pub struct Raytracer {
     pub camera: Camera,
@@ -183,25 +184,47 @@ impl Raytracer {
     pub fn render(&self, scene: &Scene, width: u32, height: u32, samples: u32) -> Result<RgbImage> {
         let mut img = RgbImage::new(width, height);
 
-        for y in 0..height {
-            for x in 0..width {
-                let mut color_sum = Vec3::ZERO;
+        const CHUNK_SIZE: u32 = 64;
+        let chunks: Vec<Vec<(u32, u32)>> = (0..height)
+            .step_by(CHUNK_SIZE as usize)
+            .map(|start_y| {
+                let end_y = (start_y + CHUNK_SIZE).min(height);
+                (start_y..end_y)
+                    .flat_map(|y| (0..width).map(move |x| (x, y)))
+                    .collect()
+            })
+            .collect();
 
-                for _ in 0..samples {
-                    let offset_x = fastrand::f32();
-                    let offset_y = fastrand::f32();
+        let chunk_results: Vec<Vec<((u32, u32), (u8, u8, u8))>> = chunks
+            .par_iter()
+            .map(|chunk| {
+                chunk
+                    .iter()
+                    .map(|&(x, y)| {
+                        let mut color_sum = Vec3::ZERO;
 
-                    let ray = self
-                        .camera
-                        .generate_ray(x, y, width, height, offset_x, offset_y);
+                        for _ in 0..samples {
+                            let offset_x = fastrand::f32();
+                            let offset_y = fastrand::f32();
 
-                    let color = self.trace_ray(scene, &ray, 0);
-                    color_sum += color;
-                }
+                            let ray = self
+                                .camera
+                                .generate_ray(x, y, width, height, offset_x, offset_y);
+                            let color = self.trace_ray(scene, &ray, 0);
+                            color_sum += color;
+                        }
 
-                let final_color = color_sum / samples as f32;
-                let color = self.vec3_to_rgb(final_color);
+                        let final_color = color_sum / samples as f32;
+                        let color = self.vec3_to_rgb(final_color);
 
+                        ((x, y), color)
+                    })
+                    .collect()
+            })
+            .collect();
+
+        for chunk_result in chunk_results {
+            for ((x, y), color) in chunk_result {
                 img.put_pixel(x, y, Rgb([color.0, color.1, color.2]));
             }
         }
