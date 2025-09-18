@@ -8,7 +8,6 @@ pub struct Material {
     pub ao: f32,
 
     pub emission: Vec3,
-    pub transparency: f32,
     pub ior: f32,
 }
 
@@ -20,7 +19,6 @@ impl Material {
             roughness: roughness.clamp(0.0, 1.0),
             ao: 1.0,
             emission: Vec3::ZERO,
-            transparency: 0.0,
             ior: 1.0,
         }
     }
@@ -45,18 +43,6 @@ impl Material {
         Self::new(Vec3::new(0.95, 0.64, 0.54), 1.0, 0.2)
     }
 
-    pub fn glass(color: Vec3, transparency: f32) -> Self {
-        Self {
-            albedo: color,
-            metallic: 0.0,
-            roughness: 0.0,
-            ao: 1.0,
-            emission: Vec3::ZERO,
-            transparency,
-            ior: 1.5,
-        }
-    }
-
     pub fn get_f0(&self) -> Vec3 {
         if self.metallic > 0.5 {
             self.albedo
@@ -77,28 +63,28 @@ impl Material {
         let a = roughness * roughness;
         let a2 = a * a;
         let n_dot_h2 = n_dot_h * n_dot_h;
-        
+
         let num = a2;
         let denom = n_dot_h2 * (a2 - 1.0) + 1.0;
         let denom = std::f32::consts::PI * denom * denom;
-        
+
         num / denom
     }
 
     pub fn geometry_schlick_ggx(n_dot_v: f32, roughness: f32) -> f32 {
         let r = roughness + 1.0;
         let k = (r * r) / 8.0;
-        
+
         let num = n_dot_v;
         let denom = n_dot_v * (1.0 - k) + k;
-        
+
         num / denom
     }
 
     pub fn geometry_smith(n_dot_v: f32, n_dot_l: f32, roughness: f32) -> f32 {
         let ggx2 = Self::geometry_schlick_ggx(n_dot_v, roughness);
         let ggx1 = Self::geometry_schlick_ggx(n_dot_l, roughness);
-        
+
         ggx1 * ggx2
     }
 

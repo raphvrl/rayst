@@ -116,10 +116,6 @@ impl SceneConfig {
             "gold" => crate::materials::Material::gold(),
             "silver" => crate::materials::Material::silver(),
             "copper" => crate::materials::Material::copper(),
-            "glass" => crate::materials::Material::glass(
-                Vec3::from_array(config.albedo),
-                config.transparency.unwrap_or(0.0),
-            ),
             _ => crate::materials::Material::new(
                 Vec3::from_array(config.albedo),
                 config.metallic.unwrap_or(0.0),

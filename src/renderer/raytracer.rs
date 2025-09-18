@@ -75,7 +75,9 @@ impl Raytracer {
         let ambient = Vec3::splat(0.03) * material.albedo * material.ao;
 
         for light in &scene.lights {
-            if !self.is_in_shadow(scene, hit.point, hit.normal, light) {
+            let shadow_factor = self.calculate_shadow_factor(scene, hit.point, hit.normal, light);
+
+            if shadow_factor > 0.0 {
                 let light_pos = light.position;
                 let light_dir = (light_pos - hit.point).normalize();
                 let light_color = light.color;
@@ -109,7 +111,7 @@ impl Raytracer {
 
                 let diffuse = material.albedo / std::f32::consts::PI;
 
-                lo += (kd * diffuse + specular) * radiance * n_dot_l;
+                lo += (kd * diffuse + specular) * radiance * n_dot_l * shadow_factor;
             }
         }
 
@@ -118,18 +120,56 @@ impl Raytracer {
         mapped.powf(1.0 / 2.2)
     }
 
-    fn is_in_shadow(&self, scene: &Scene, point: Vec3, normal: Vec3, light: &PointLight) -> bool {
-        let light_direction = (light.position - point).normalize();
-        let light_distance = (light.position - point).length();
-        let shadow_ray_origin = point + normal * 0.001;
-        let shadow_ray = Ray::new(shadow_ray_origin, light_direction);
+    fn calculate_shadow_factor(
+        &self,
+        scene: &Scene,
+        point: Vec3,
+        normal: Vec3,
+        light: &PointLight,
+    ) -> f32 {
+        let light_pos = light.position;
+        let light_direction = (light_pos - point).normalize();
 
-        if let Some(hit) = scene.hit(&shadow_ray) {
-            if hit.distance < light_distance - 0.001 {
-                return hit.material.transparency < 0.5;
+        let light_radius = 0.5;
+        let samples = 16;
+
+        let mut shadow_factor = 0.0;
+        let shadow_ray_origin = point + normal * 0.001;
+
+        let up = if light_direction.y.abs() < 0.9 {
+            Vec3::Y
+        } else {
+            Vec3::X
+        };
+
+        let right = light_direction.cross(up).normalize();
+        let forward = right.cross(light_direction).normalize();
+
+        for i in 0..samples {
+            let angle = 2.0 * std::f32::consts::PI * (i as f32) / (samples as f32);
+            let radius = light_radius * fastrand::f32().sqrt();
+
+            let offset = right * (radius * angle.cos()) + forward * (radius * angle.sin());
+            let sample_light_pos = light_pos + offset;
+
+            let sample_light_direction = (sample_light_pos - point).normalize();
+            let sample_light_distance = (sample_light_pos - point).length();
+
+            let shadow_ray = Ray::new(shadow_ray_origin, sample_light_direction);
+
+            let mut occluded = false;
+            if let Some(hit) = scene.hit(&shadow_ray) {
+                if hit.distance < sample_light_distance - 0.001 {
+                    occluded = true;
+                }
+            }
+
+            if !occluded {
+                shadow_factor += 1.0;
             }
         }
-        false
+
+        shadow_factor / samples as f32
     }
 
     fn vec3_to_rgb(&self, color: Vec3) -> (u8, u8, u8) {

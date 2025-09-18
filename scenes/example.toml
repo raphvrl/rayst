@@ -7,7 +7,7 @@ fov = 60.0
 width = 800
 height = 600
 max_depth = 10
-antialiasing = 4
+antialiasing = 16
 output_file = "scene.png"
 
 [background]
@@ -38,6 +38,6 @@ material_type = "gold"
 albedo = [0.8, 0.2, 0.2]
 
 [[lights]]
-position = [10.0, 2.0, 10.0]
+position = [2.0, 10.0, 2.0]
 color = [255, 255, 255]
 intensity = 1.0
