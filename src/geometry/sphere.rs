@@ -1,4 +1,5 @@
 use crate::geometry::Primitive;
+use crate::materials::Material;
 use crate::math::Intersection;
 use crate::math::Ray;
 use glam::Vec3;
@@ -7,15 +8,15 @@ use glam::Vec3;
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
-    pub color: (u8, u8, u8),
+    pub material: Material,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f32, color: (u8, u8, u8)) -> Self {
+    pub fn new(center: Vec3, radius: f32, material: Material) -> Self {
         Self {
             center,
             radius,
-            color,
+            material,
         }
     }
 }
@@ -49,6 +50,6 @@ impl Primitive for Sphere {
         let point = ray.origin + t * ray.direction;
         let normal = (point - self.center).normalize();
 
-        Some(Intersection::new(t, point, normal, self.color))
+        Some(Intersection::new(t, point, normal, self.material.clone()))
     }
 }
