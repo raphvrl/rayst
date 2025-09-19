@@ -1,68 +1,48 @@
-# 🦀 Rayst v0.1.0 - First Release
+# Changelog
 
-A modern raytracer built from scratch in Rust as a journey from C++ to learning proper Rust development.
+All notable changes to this project will be documented in this file.
 
-## ✨ Core Features
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### 🎯 **Geometry Support**
+## [0.1.0] - 2024-12-19
 
-- **Spheres** - Perfect for reflective objects and basic shapes
-- **Planes** - Ideal for floors, walls, and infinite surfaces
-- **Cubes** - Solid rectangular objects with full rotation support
-- **Pyramids** - Complex multi-face geometry with configurable base size and height
-- **Triangles** - Foundation primitive powering complex geometries
+### Added
 
-### 🎨 **Material System**
+- **Ray tracing engine** with realistic reflections and lighting
+- **Geometry support** for spheres, planes, cubes, and pyramids
+- **Soft shadows** using area light approximation with multiple shadow samples
+- **Material system** with plastic, metal, and gold presets
+- **PBR-based rendering** with metallic/roughness workflow
+- **Multi-threaded rendering** powered by Rayon for optimal CPU utilization
+- **Configurable anti-aliasing** with customizable sample count
+- **TOML-based scene configuration** for human-readable scene files
+- **Camera controls** with position, direction, and field-of-view settings
+- **High-resolution output** with PNG export support
+- **Cross-platform support** for Windows, macOS, and Linux
 
-- **Plastic materials** - Non-metallic surfaces with configurable roughness
-- **Metal materials** - Reflective surfaces with controllable metallic properties
-- **Gold preset** - Pre-configured luxury metal material
-- **PBR-based rendering** - Physically Based Rendering with metallic/roughness workflow
-- **Customizable properties** - Albedo, metallicness, roughness, and ambient occlusion
+### Technical Features
 
-### 💡 **Advanced Lighting**
+- **Optimized ray-triangle intersection** using fast Möller-Trumbore algorithm
+- **Cook-Torrance BRDF implementation** for physically accurate material response
+- **Chunk-based processing** for efficient memory usage during large renders
+- **Adjustable recursion depth** to control reflection bounces
+- **Rust 2024 Edition** with modern systems programming practices
 
-- **Point lights** - Omnidirectional light sources with position and intensity control
-- **Soft shadows** - Area light approximation using multiple shadow samples for realistic penumbra
-- **Realistic reflections** - Ray-traced reflections with proper energy conservation
-- **Physically accurate** - Cook-Torrance BRDF implementation for realistic material response
+### Performance
 
-### 🖼️ **Rendering Pipeline**
+- **Parallel rendering** with multi-core CPU utilization
+- **Efficient shadow sampling** with configurable quality/speed balance
+- **Memory efficient** streaming chunk-based rendering
+- **Fast vector mathematics** using Glam crate
 
-- **Multi-threaded rendering** - Powered by Rayon for optimal CPU utilization
-- **Configurable anti-aliasing** - Customizable sample count for smooth edges
-- **Adjustable recursion depth** - Control reflection bounces for performance/quality balance
-- **High-resolution output** - Support for any resolution with PNG export
-- **Chunk-based processing** - Efficient memory usage for large renders
+### Documentation
 
-### ⚙️ **Configuration System**
-
-- **TOML-based scenes** - Human-readable configuration files
-- **Camera controls** - Position, direction, and field-of-view settings
-- **Flexible object placement** - Easy positioning and rotation of all geometry types
-- **Material assignment** - Per-object material configuration
-- **Render settings** - Resolution, quality, and output customization
-
-## 🚀 **Performance Features**
-
-- **Parallel rendering** - Multi-core CPU utilization
-- **Optimized ray-triangle intersection** - Fast Möller-Trumbore algorithm
-- **Efficient shadow sampling** - Configurable sample count for quality/speed balance
-- **Memory efficient** - Streaming chunk-based rendering for large images
-
-## 📦 **What's Included**
-
-- Cross-platform binary (`rayst` / `rayst.exe`)
-- Example scene configuration (`example.toml`)
-- Complete documentation (`README.md`)
+- Complete README with usage examples
+- Example scene configuration included
+- Cross-platform binary distribution
 - Ready-to-render sample scene with multiple objects and materials
 
-## 🛠️ **Technical Stack**
+---
 
-- **Rust 2024 Edition** - Modern systems programming
-- **Glam** - High-performance vector mathematics
-- **Rayon** - Data parallelism and work stealing
-- **Image crate** - PNG output with color management
-- **Serde + TOML** - Type-safe configuration parsing
-
-Perfect for learning raytracing concepts, Rust programming, or generating beautiful rendered scenes!
+_A modern raytracer built from scratch in Rust as a journey from C++ to learning proper Rust development. Perfect for learning raytracing concepts, Rust programming, or generating beautiful rendered scenes!_

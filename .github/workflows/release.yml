@@ -2,24 +2,13 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    tags: ["v*"]
 
 permissions:
   contents: write
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/create-gh-release-action@v1
-        with:
-          changelog: CHANGELOG.md
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  upload-assets:
-    needs: create-release
+  release:
     strategy:
       matrix:
         include:
@@ -32,11 +21,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: taiki-e/upload-rust-binary-action@v1
+      - uses: houseabsolute/actions-rust-release@v0
         with:
-          bin: rayst
+          executable-name: rayst
           target: ${{ matrix.target }}
-          include: README.md,scenes/example.toml,screenshots/scene.png
-          archive: $bin-$tag-$target
-          leading-dir: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          changes-file: CHANGELOG.md
+          extra-files: |
+            README.md
+            scenes/
+            screenshots/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
