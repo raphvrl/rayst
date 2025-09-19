@@ -9,7 +9,19 @@ permissions:
   contents: write
 
 jobs:
-  upload:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  upload-assets:
+    needs: create-release
     strategy:
       matrix:
         include:
@@ -26,7 +38,7 @@ jobs:
         with:
           bin: rayst
           target: ${{ matrix.target }}
-          include: README.md,screenshots/scene.png,scenes/example.toml
+          include: README.md,scenes/example.toml
           archive: $bin-$tag-$target
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
