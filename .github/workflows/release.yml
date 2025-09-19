@@ -2,29 +2,31 @@ name: Release
 
 on:
   push:
-    tags: ["v*"]
+    tags:
+      - "v*"
 
 permissions:
   contents: write
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  upload:
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          draft: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: rayst
+          target: ${{ matrix.target }}
+          include: README.md,screenshots/scene.png,scenes/example.toml
           archive: $bin-$tag-$target
-          include: scenes/example.toml,README.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
