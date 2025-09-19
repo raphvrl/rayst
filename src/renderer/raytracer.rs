@@ -132,7 +132,7 @@ impl Raytracer {
         let light_direction = (light_pos - point).normalize();
 
         let light_radius = 0.5;
-        let samples = 16;
+        let samples = 8;
 
         let mut shadow_factor = 0.0;
         let shadow_ray_origin = point + normal * 0.001;
