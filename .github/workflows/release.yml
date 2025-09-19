@@ -38,7 +38,7 @@ jobs:
         with:
           bin: rayst
           target: ${{ matrix.target }}
-          include: README.md,scenes/example.toml
+          include: README.md,scenes/,screenshots/
           archive: $bin-$tag-$target
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
