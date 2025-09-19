@@ -13,12 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: softprops/action-gh-release@v1
+      - uses: taiki-e/create-gh-release-action@v1
         with:
-          generate_release_notes: true
-          draft: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          changelog: CHANGELOG.md
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   upload-assets:
     needs: create-release
@@ -38,7 +36,7 @@ jobs:
         with:
           bin: rayst
           target: ${{ matrix.target }}
-          include: README.md,scenes/,screenshots/
+          include: README.md,scenes/example.toml,screenshots/scene.png
           archive: $bin-$tag-$target
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          leading-dir: true
+          token: ${{ secrets.GITHUB_TOKEN }}
