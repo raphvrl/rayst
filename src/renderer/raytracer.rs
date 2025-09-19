@@ -159,10 +159,10 @@ impl Raytracer {
             let shadow_ray = Ray::new(shadow_ray_origin, sample_light_direction);
 
             let mut occluded = false;
-            if let Some(hit) = scene.hit(&shadow_ray) {
-                if hit.distance < sample_light_distance - 0.001 {
-                    occluded = true;
-                }
+            if let Some(hit) = scene.hit(&shadow_ray)
+                && hit.distance < sample_light_distance - 0.001
+            {
+                occluded = true;
             }
 
             if !occluded {
@@ -195,7 +195,8 @@ impl Raytracer {
             })
             .collect();
 
-        let chunk_results: Vec<Vec<((u32, u32), (u8, u8, u8))>> = chunks
+        type PixelData = ((u32, u32), (u8, u8, u8));
+        let chunk_results: Vec<Vec<PixelData>> = chunks
             .par_iter()
             .map(|chunk| {
                 chunk

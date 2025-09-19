@@ -92,11 +92,12 @@ impl Primitive for Pyramid {
         let mut closest_distance = f32::INFINITY;
 
         for triangle in &self.triangles {
-            if let Some(hit) = triangle.hit(ray) {
-                if hit.distance < closest_distance && hit.distance > 0.001 {
-                    closest_distance = hit.distance;
-                    closest_hit = Some(hit);
-                }
+            if let Some(hit) = triangle.hit(ray)
+                && hit.distance < closest_distance
+                && hit.distance > 0.001
+            {
+                closest_distance = hit.distance;
+                closest_hit = Some(hit);
             }
         }
 

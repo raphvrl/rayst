@@ -45,7 +45,7 @@ impl Primitive for Triangle {
         let s = ray.origin - self.v0;
         let u = f * s.dot(h);
 
-        if u < 0.0 || u > 1.0 {
+        if !(0.0..=1.0).contains(&u) {
             return None;
         }
 

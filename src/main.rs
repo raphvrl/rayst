@@ -19,7 +19,7 @@ fn main() {
 }
 
 fn run(config_path: &str) -> Result<()> {
-    let config = SceneConfig::load_from_file(&config_path)?;
+    let config = SceneConfig::load_from_file(config_path)?;
 
     println!("Loading scene from {}", config_path);
 
