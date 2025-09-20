@@ -75,10 +75,10 @@ jobs:
       - name: Prepare release assets
         run: find artifacts -name "*.zip" -exec mv {} . \;
 
-      - uses: softprops/action-gh-release@v1
+      - uses: taiki-e/create-gh-release-action@v1
         with:
-          name: "Rayst ${GITHUB_REF_NAME}"
-          body_path: CHANGELOG.md
-          files: "*.zip"
+          changelog: CHANGELOG.md
+          title: $version
+          prefix: v
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
