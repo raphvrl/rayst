@@ -4,7 +4,7 @@
 
 ## Why This Project?
 
-I got tired of C++ and decided to switch to Rust. To properly learn the language, I implemented a small raytracer from scratch.
+I got tired of C++ ecosystem and decided to switch to Rust. To properly learn the language, I implemented a small raytracer from scratch.
 
 This project's sole purpose is to learn Rust - there probably won't be much evolution afterward.
 
