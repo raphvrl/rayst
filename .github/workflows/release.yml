@@ -62,6 +62,8 @@ jobs:
           name: ${{ matrix.platform.name }}
           path: ${{ matrix.platform.archive }}
 
+  # ... existing code ...
+
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -80,5 +82,12 @@ jobs:
           changelog: CHANGELOG.md
           title: $version
           prefix: v
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "*.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
