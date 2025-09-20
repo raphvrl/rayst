@@ -7,28 +7,78 @@ on:
 permissions:
   contents: write
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
-  release:
+  build:
+    name: Build ${{ matrix.platform.name }}
     strategy:
       matrix:
-        include:
-          - target: x86_64-unknown-linux-gnu
+        platform:
+          - name: Linux-x86_64
             os: ubuntu-latest
-          - target: x86_64-apple-darwin
-            os: macos-latest
-          - target: x86_64-pc-windows-msvc
+            target: x86_64-unknown-linux-gnu
+            bin: rayst
+            archive: rayst-linux-x86_64.zip
+
+          - name: Windows-x86_64
             os: windows-latest
-    runs-on: ${{ matrix.os }}
+            target: x86_64-pc-windows-msvc
+            bin: rayst.exe
+            archive: rayst-windows-x86_64.zip
+
+          - name: macOS-x86_64
+            os: macos-latest
+            target: x86_64-apple-darwin
+            bin: rayst
+            archive: rayst-macos-x86_64.zip
+
+    runs-on: ${{ matrix.platform.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: houseabsolute/actions-rust-release@v0
+
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          executable-name: rayst
-          target: ${{ matrix.target }}
-          changes-file: CHANGELOG.md
-          extra-files: |
-            README.md
-            scenes/
-            screenshots/
+          targets: ${{ matrix.platform.target }}
+
+      - name: Build and package
+        shell: bash
+        run: |
+          cargo build --release --target ${{ matrix.platform.target }}
+          mkdir release
+          cp target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }} release/
+          cp README.md release/
+          cp -r scenes screenshots release/
+          cd release
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            7z a ../${{ matrix.platform.archive }} *
+          else
+            zip -r ../${{ matrix.platform.archive }} *
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform.name }}
+          path: ${{ matrix.platform.archive }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        run: find artifacts -name "*.zip" -exec mv {} . \;
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          name: "Rayst ${GITHUB_REF_NAME}"
+          body_path: CHANGELOG.md
+          files: "*.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
