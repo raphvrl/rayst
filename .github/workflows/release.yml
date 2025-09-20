@@ -86,8 +86,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2
-        with:
-          files: "*.zip"
+        run: |
+          for file in *.zip; do
+            gh release upload ${{ github.ref_name }} "$file"
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
