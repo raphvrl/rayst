@@ -62,8 +62,6 @@ jobs:
           name: ${{ matrix.platform.name }}
           path: ${{ matrix.platform.archive }}
 
-  # ... existing code ...
-
   release:
     needs: build
     runs-on: ubuntu-latest
